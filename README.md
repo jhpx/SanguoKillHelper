@@ -11,4 +11,5 @@ Just try:
 	python Characters.py
 	python Achievements.py
 Only you can import pygraphviz:
+
 	python AchievementsPlot.py
