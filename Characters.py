@@ -59,13 +59,13 @@ class NonCharacter(Node):
 		"""按价值的比较函数"""
 		return -other.__cmp_cost_NonCharacter__(self)
 
-	def __cmp_cost_NonCharacter__(self, other):
+	def __cmp_cost_NonCharacter__(x, y):
 		"""按价值比较非武将与非武将"""
-		return cmp(self._cost, other._cost) or cmp(self._name, other._name)
+		return cmp(x._cost, y._cost) or cmp(x._name, y._name)
 
-	def __cmp_cost_Character__(self, other):
+	def __cmp_cost_Character__(x, y):
 		"""按价值比较非武将与武将"""
-		return cmp(self._cost, other._cost.imag) or cmp(len(self._name), len(other._name))
+		return cmp(x._cost, y._cost.imag) or cmp(len(x._name), len(y._name))
 
 pass
 class Character(Node):
@@ -141,31 +141,30 @@ class Character(Node):
 		"""以字符串形式返回一个武将的所有属性"""
 		return '%s,%s,%s,%s'%(self._name, self._country, self._pack, self.cost)
 
-	def cmp_default(self, other):
+	def cmp_default(x, y):
 		"""按照卡包、国别、名称排序的比较函数"""
-		return cmp(Character.ORDER_PACK[self._pack], Character.ORDER_PACK[other._pack]) \
-		or cmp(Character.ORDER_COUNTRY[self._country], Character.ORDER_COUNTRY[other._country]) \
-		or cmp(self._name, other._name)
+		return cmp(Character.ORDER_PACK[x._pack], Character.ORDER_PACK[y._pack]) \
+		or cmp(Character.ORDER_COUNTRY[x._country], Character.ORDER_COUNTRY[y._country]) \
+		or cmp(x._name, y._name)
 
-	def cmp_cost(self, other):
+	def cmp_cost(x, y):
 		"""按价值的比较函数"""
-		return -other.__cmp_cost_Character__(self)
+		return -y.__cmp_cost_Character__(x)
 
-	def __cmp_cost_NonCharacter__(self, other):
+	def __cmp_cost_NonCharacter__(x, y):
 		"""按价值比较武将与非武将"""
-		return cmp(self._cost.imag, other._cost) or cmp(len(self._name), len(other._name))
+		return cmp(x._cost.imag, y._cost) or cmp(len(x._name), len(y._name))
 
-	def __cmp_cost_Character__(self, other):
+	def __cmp_cost_Character__(x, y):
 		"""按价值比较武将与武将"""
-		return cmp(self._cost.imag, other._cost.imag) \
-		or cmp(self._cost.real, other._cost.real) \
-		or self.cmp_default(other)
+		return cmp(x._cost.imag, y._cost.imag) \
+		or cmp(x._cost.real, y._cost.real) or x.cmp_default(y)
 pass
 
 class Characters(object):
 	"""武将集，包含一些武将加载、处理的方法"""
-	def __init__(self, characters_filename = unicode("各包武将.txt", 'utf8'), \
-	gallery_filename = unicode("武将列表.txt", 'utf8'), \
+	def __init__(self, characters_filename = unicode("各包武将.txt", 'utf8'), 
+	gallery_filename = unicode("武将列表.txt", 'utf8'), 
 	cost_filename = unicode("武将价格.txt", 'utf8'), rebuild=False):
 		"""rebuild为True时，重建'武将列表'"""
 		self._char_dic = {}
@@ -250,14 +249,14 @@ class Characters(object):
 		self.sort()
 		return new_obj
 
-	def sort(self, sortby='default'):
+	def sort(self, sortby='default', reverse=False):
 		"""按照指定列排序"""
 		if sortby=='default':
-			self._sort_list = [x.name for x in sorted(self.get_character_list(), cmp=Character.cmp_default)]
+			self._sort_list = [x.name for x in sorted(self.get_character_list(), 
+							cmp=Character.cmp_default, reverse=reverse)]
 		elif sortby=='cost':
-			self._sort_list = [x.name for x in sorted(self.get_character_list(), cmp=Character.cmp_cost)]
-		elif sortby=='cost_reverse':
-			self._sort_list = [x.name for x in sorted(self.get_character_list(), cmp=Character.cmp_cost, reverse=True)]
+			self._sort_list = [x.name for x in sorted(self.get_character_list(), 
+							cmp=Character.cmp_cost, reverse=reverse)]
 		pass
 
 	def get_regular(self):
@@ -274,6 +273,7 @@ if __name__ == "__main__":
 	c.get_character('孙权')
 	c.get_character('姜孟冯')
 	c.buy_characters(['SR孙权','SR黄盖', 'SR周瑜','SR马超', 'SR大乔','SR貂蝉', 'SR张飞'])
-	c.filter(lambda x:x.cost=='已获得').write_characters(unicode("test/已获得武将列表.txt", 'utf8'))
+	c.filter(lambda x:x.cost=='已获得').write_characters(
+								unicode("test/已获得武将列表.txt", 'utf8'))
 	c.write_characters(unicode("test/全部武将列表.txt", 'utf8'))
 	print "all_complete!!"

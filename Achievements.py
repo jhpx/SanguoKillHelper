@@ -10,8 +10,12 @@ class Achievement(object):
 		self._name = name
 		self._condition = condition
 		self._reward = reward
-		self._condition_node = characters.get_character(self.__match_condition(condition, characters.get_regular()))
-		self._reward_node = characters.get_character(self.__match_reward(reward, characters.get_regular()))
+		self._condition_node = characters.get_character(
+				self.__match_condition(condition, characters.get_regular())
+				)
+		self._reward_node = characters.get_character(
+				self.__match_reward(reward, characters.get_regular())
+				)
 		self._reward_count = self.__match_count(reward)
 
 	@property
@@ -108,7 +112,8 @@ class Achievement(object):
 
 	def __str__(self):
 		"""以字符串形式返回一条成就"""
-		return '%s#%s#%s'%(self._name, self._condition, self._reward)
+		return '%s:%s->%s(%s,%s)'%(self.name, self.condition_node.name, 
+					self.reward_node.name, self.reward_node.cost, self.reward_count)
 
 	def cmp_default(self, other):
 		"""按照id排序的比较函数"""
@@ -121,7 +126,10 @@ class Achievement(object):
 class Achievements:
 	"""成就类，包含成就名、条件与结果"""
 
-	def __init__(self, characters, raw_achievements_filename=unicode("成就_raw.txt", 'utf8'), achievements_filename=unicode("成就.txt", 'utf8'), rebuild=False):
+	def __init__(self, characters, 
+			raw_achievements_filename=unicode("成就_raw.txt", 'utf8'), 
+			achievements_filename=unicode("成就.txt", 'utf8'), rebuild=False
+			):
 		self._characters = characters
 
 		if rebuild:
@@ -141,8 +149,10 @@ class Achievements:
 		achievements_text =  open(achievements_filename, 'r').read()
 
 		#修正错误
-		achievements_text = achievements_text.replace("武之化身 \t\n\n    使用貂蝉","绝世舞姬 \t\n\n    使用貂蝉",1)
-		achievements_text = achievements_text.replace("谦虚好学 \t\n\n    在评价","慧眼如炬 \t\n\n    在评价",1)
+		achievements_text = achievements_text.replace("武之化身 \t\n\n    使用貂蝉",
+											"绝世舞姬 \t\n\n    使用貂蝉",1)
+		achievements_text = achievements_text.replace("谦虚好学 \t\n\n    在评价",
+											"慧眼如炬 \t\n\n    在评价",1)
 		achievements_text = achievements_text.replace("夏侯?","夏侯惇")
 		achievements_text = achievements_text.replace("荀?","荀彧")
 		achievements_text = achievements_text.replace("指?相赠","指囷相赠")
@@ -174,13 +184,15 @@ class Achievements:
 		"""全面的成就列表导出"""
 		with open(filename,'wb') as file:
 			for x in self._achievements:
-				csv.writer(file, delimiter='#').writerow([x.name, x.condition_node.name,x.reward_node.name,x.reward_node.cost,x.reward_count])
+				csv.writer(file, delimiter='#').writerow(
+				[x.name, x.condition_node.name, x.reward_node.name,
+				x.reward_node.cost, x.reward_count])
 
-	def __read_achievements(self, achievements_text):
+	def __read_achievements(self, text):
 		"""读取成就，整理成成就列表。"""
 		#按照武将名进行文本正则解析处理
 		achievements = []
-		achievements_list = [line.split('#') for line in achievements_text.split('\n') if line != '']
+		achievements_list = [line.split('#') for line in text.split('\n') if line != '']
 		for i in range(len(achievements_list)):
 			x = achievements_list[i]
 			achievements.append(Achievement(i, x[0], x[1], x[2], self._characters))
@@ -195,15 +207,12 @@ class Achievements:
 		self._achievements = self.__read_achievements(self._achievements_text)
 		return new_obj
 
-	def sort(self, sortby='default'):
+	def sort(self, sortby='default', reverse=False):
 		"""按照指定方式排序"""
-
 		if sortby=='default':
-			self._achievements.sort(cmp=Achievement.cmp_default)
+			self._achievements.sort(cmp=Achievement.cmp_default, reverse=reverse)
 		elif sortby=='cost':
-			self._achievements.sort(cmp=Achievement.cmp_cost)
-		elif sortby=='cost_reverse':
-			self._achievements.sort(cmp=Achievement.cmp_cost, reverse=True)	
+			self._achievements.sort(cmp=Achievement.cmp_cost, reverse=reverse)
 		pass
 
 	def get_achievement_list(self):
@@ -216,9 +225,12 @@ class Achievements:
 
 	def characters_should_buy(self):
 		"""获取推荐购买武将的函数"""
-		character_set =	set(self._characters.filter(lambda x:re.match(r'\d+金币', x.cost)).get_character_list())
+		character_set = set(self._characters.filter(
+								lambda x:re.match(r'\d+金币', x.cost)
+								).get_character_list())
 		character_set.difference_update(set(self.get_reward_characters()))
-		return ['%s:%s' %(x.name, x.cost) for x in sorted(list(character_set), cmp=Character.cmp_cost)]
+		return ['%s:%s' %(x.name, x.cost) for x in sorted(list(character_set), 
+												cmp=Character.cmp_cost)]
 
 	def characters_should_use(self):
 		#滤选报酬为武将的成就
@@ -226,25 +238,28 @@ class Achievements:
 		#滤选内容为80胜的成就
 		achievements = achievements.filter(lambda x:re.match(r'.+80.+', x.condition))
 		#去掉报酬武将已获得或未发售的成就
-		achievements = achievements.filter(lambda x:x.reward_node.cost!='已获得' and x.reward_node.pack !='未发售')
+		achievements = achievements.filter(
+				lambda x:x.reward_node.cost!='已获得' and x.reward_node.pack !='未发售')
 		#滤选待刷武将已获得的成就
 		achievements = achievements.filter(lambda x:x.condition_node.cost=='已获得')
 
-		achievements.sort('cost_reverse')
-		return ['%s:%s->%s(%s,%s)' %(x.name, x.condition_node.name, x.reward_node.name, x.reward_node.cost, x.reward_count) for x in achievements._achievements]
+		achievements.sort('cost', True)
+		return [str(x) for x in achievements._achievements]
 
 # 测试程序
 if __name__ == "__main__":
 	c = Characters()
 
 	c.buy_characters(c.filter(lambda x:re.match(r'\d+铜钱', x.cost)).get_character_names())
-	c.buy_characters(['SK许攸','曹丕', '张角', '荀彧', '孟获', '徐庶', '庞德', '典韦', '关平', '刘协', 'SK管辂', 'SK黄月英', 'Sp孙尚香', 'Sp马超'])
+	c.buy_characters(['SK许攸','曹丕', '张角', '荀彧', '孟获', '徐庶', '庞德', '典韦', 
+						'关平', '刘协', 'SK管辂', 'SK黄月英', 'Sp孙尚香', 'Sp马超'])
 	c.buy_characters(['SR孙权','SR黄盖', 'SR周瑜','SR马超', 'SR大乔','SR貂蝉', 'SR张飞'])
 	a = Achievements(characters=c, rebuild=True)
 	a = Achievements(characters=c, rebuild=False)
-	a.filter(lambda x:isinstance (x.condition_node, NonCharacter)).write_achievements_detail(unicode("test/非武将因素成就.txt",'utf-8'))
+	a.filter(lambda x:isinstance (x.condition_node, NonCharacter)
+			).write_achievements_detail(unicode("test/非武将因素成就.txt",'utf-8'))
 	a.sort('cost')
 	a.write_achievements_detail(unicode("test/全成就列表细节.txt", 'utf8'))
-#	print "\n".join(a.characters_should_buy())
+	print "\n".join(a.characters_should_buy())
 	print "\n".join(a.characters_should_use())
 	print "all_complete!!"

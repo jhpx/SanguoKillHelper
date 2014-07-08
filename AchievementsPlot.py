@@ -13,15 +13,15 @@ class AchievementsPlot(object):
 	
 	def get_ahievements_data_after_reassign_group(self):
 		"""整理武将依赖，按照相同节点先分后合"""
-		achievements_data_group ={}
+		achievements_group ={}
 		#三重循环，但其实第二重与第三重最大循环次数也只有2次
 		for x in self._achievements.get_achievement_list():
 			for y in x.condition_node.name.split('/'):
-				if (achievements_data_group.has_key(y+"#"+x.reward_node.name) is not True):
-					achievements_data_group[y+"#"+x.reward_node.name] = x.name
+				if (achievements_group.has_key(y+"#"+x.reward_node.name) is not True):
+					achievements_group[y+"#"+x.reward_node.name] = x.name
 				else:
-					achievements_data_group[y+"#"+x.reward_node.name] += "," + x.name
-		return [a+"#"+ achievements_data_group[a] for a in achievements_data_group.keys()]
+					achievements_group[y+"#"+x.reward_node.name] += "," + x.name
+		return [a+"#"+ achievements_group[a] for a in achievements_group.keys()]
 		
 	def draw_png(self, png_filename=unicode('成就-dot.png','utf8')):
 		"""生成一幅武将成就图"""
@@ -41,7 +41,11 @@ class AchievementsPlot(object):
 			G.add_node(c0.name.decode('utf8'), color=c0.color, style=c0.style)
 			G.add_node(c1.name.decode('utf8'), color=c1.color, style=c1.style)
 
-			G.add_edge(info[0].decode('utf8'),info[1].decode('utf8'),label=info[2].decode('utf8'))
+			G.add_edge(
+			info[0].decode('utf8'),
+			info[1].decode('utf8'),
+			label=info[2].decode('utf8')
+			)
 #		print G
 		G.layout('dot')
 		G.draw(png_filename)
