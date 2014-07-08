@@ -7,5 +7,8 @@ http://www.graphviz.org/
 Or you cannot use the AchievementsPlot class.
 
 Just try:
+
 	python Characters.py
 	python Achievements.py
+Only you can import pygraphviz:
+	python AchievementsPlot.py
