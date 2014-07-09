@@ -1,3 +1,6 @@
+SanguoKillHelper
+================
+
 A small tool help me play SanguoKill (a card game in ios and android) well. It can tell me which charater should be selected first. 
 
 Please install pygraphviz and graphviz first.
