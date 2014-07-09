@@ -82,10 +82,11 @@ pass
 class Character(Node):
 
     """武将类：包含武将名、国别、卡包、价值、颜色、风格"""
-    ORDER_COUNTRY = {'蜀': 0, '魏': 1, '吴': 2, '神': 3, '群': 4}
-    ORDER_PACK = {'标准包': 0, 'SR标准包': 1, '天罡包': 2, '地煞包': 3, '人杰包': 4,
-                  '破军包': 5, '阴阳包': 6, '特别包': 7, '魂烈包': 8, '三英包': 9, '未发售': 10}
-    COLOR_COUNTRY = {
+    COUNTRY_ORD = {'蜀': 0, '魏': 1, '吴': 2, '神': 3, '群': 4}
+    PACK_ORD = {'标准包': 0, 'SR标准包': 1, '天罡包': 2, '地煞包': 3, '人杰包': 4,
+                '破军包': 5, '阴阳包': 6, '特别包': 7, '魂烈包': 8, '三英包': 9,
+                '未发售': 10}
+    COUNTRY_CLR = {
         '魏': 'blue', '蜀': 'green', '吴': 'red', '群': 'yellow', '神': 'purple'}
 
     def __init__(self, name, country, pack, cost):
@@ -98,8 +99,8 @@ class Character(Node):
     @property
     def color(self):
         """按照国别返回武将颜色"""
-        if self._country in Character.COLOR_COUNTRY.keys():
-            return Character.COLOR_COUNTRY[self._country]
+        if self._country in Character.COUNTRY_CLR.keys():
+            return Character.COUNTRY_CLR[self._country]
         else:
             return 'grey'
 
@@ -155,12 +156,14 @@ class Character(Node):
 
     def __str__(self):
         """以字符串形式返回一个武将的所有属性"""
-        return '%s,%s,%s,%s' % (self._name, self._country, self._pack, self.cost)
+        return '%s,%s,%s,%s' % (self._name, self._country,
+                                self._pack, self.cost)
 
     def cmp_default(x, y):
         """按照卡包、国别、名称排序的比较函数"""
-        return cmp(Character.ORDER_PACK[x._pack], Character.ORDER_PACK[y._pack]) \
-            or cmp(Character.ORDER_COUNTRY[x._country], Character.ORDER_COUNTRY[y._country]) \
+        return cmp(Character.PACK_ORD[x._pack], Character.PACK_ORD[y._pack]) \
+            or cmp(Character.COUNTRY_ORD[x._country],
+                   Character.COUNTRY_ORD[y._country]) \
             or cmp(x._name, y._name)
 
     def cmp_cost(x, y):
@@ -272,16 +275,18 @@ class Characters(object):
     def sort(self, sortby='default', reverse=False):
         """按照指定列排序"""
         if sortby == 'default':
-            self._sort_list = [x.name for x in sorted(self.get_character_list(),
-                                                      cmp=Character.cmp_default, reverse=reverse)]
+            cmp = Character.cmp_default
         elif sortby == 'cost':
-            self._sort_list = [x.name for x in sorted(self.get_character_list(),
-                                                      cmp=Character.cmp_cost, reverse=reverse)]
+            cmp = Character.cmp_cost
+        if cmp:
+            self._sort_list = [x.name for x in sorted(
+                self.get_character_list(), cmp, reverse=reverse)]
         pass
 
     def get_regular(self):
         """返回武将列表的正则表达式"""
-        return re.compile("(?<!主公是)(?<!对)(" + "|".join(self._sort_list) + "|三英模式.+$)")
+        return re.compile("(?<!主公是)(?<!对)("
+                          + "|".join(self._sort_list) + "|三英模式.+$)")
 pass
 
 # 测试程序
@@ -292,7 +297,8 @@ if __name__ == "__main__":
     c.get_character_names()
     c.get_character('孙权')
     c.get_character('姜孟冯')
-    c.buy_characters(['SR孙权', 'SR黄盖', 'SR周瑜', 'SR马超', 'SR大乔', 'SR貂蝉', 'SR张飞'])
+    c.buy_characters(['SR孙权', 'SR黄盖', 'SR周瑜', 'SR马超',
+                      'SR大乔', 'SR貂蝉', 'SR张飞'])
     c.filter(lambda x: x.cost == '已获得').write_characters(
         unicode("test/已获得武将列表.txt", 'utf8'))
     c.write_characters(unicode("test/全部武将列表.txt", 'utf8'))

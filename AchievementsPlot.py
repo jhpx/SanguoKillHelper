@@ -2,8 +2,8 @@
 # AchievementsPlot.py
 # Author: Jiangmf
 import pygraphviz as pgv
-from Characters import *
-from Achievements import *
+from Characters import Characters, Character, NonCharacter
+from Achievements import Achievements
 
 
 class AchievementsPlot(object):
@@ -17,16 +17,17 @@ class AchievementsPlot(object):
 
     def get_ahievements_data_after_reassign_group(self):
         """整理武将依赖，按照相同节点先分后合"""
-        achievements_group = {}
+        group = {}
         # 三重循环，但其实第二重与第三重最大循环次数也只有2次
         for x in self._achievements.get_achievement_list():
             for y in x.condition_node.name.split('/'):
-                if (achievements_group.has_key(y + "#" + x.reward_node.name) is not True):
-                    achievements_group[y + "#" + x.reward_node.name] = x.name
+                key = y + "#" + x.reward_node.name
+                if key not in group:
+                    group[y + "#" + x.reward_node.name] = x.name
                 else:
-                    achievements_group[
+                    group[
                         y + "#" + x.reward_node.name] += "," + x.name
-        return [a + "#" + achievements_group[a] for a in achievements_group.keys()]
+        return [a + "#" + group[a] for a in group.keys()]
 
     def draw_png(self, png_filename=unicode('成就-dot.png', 'utf8')):
         """生成一幅武将成就图"""

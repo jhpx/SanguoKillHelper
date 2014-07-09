@@ -3,7 +3,8 @@
 # Author: Jiangmf
 import re
 import csv
-from Characters import *
+import copy
+from Characters import Characters, Character, NonCharacter
 
 
 class Achievement(object):
@@ -68,7 +69,7 @@ class Achievement(object):
         """
         m1 = reg_characters.findall(str)
         # 手工匹配
-        if len(m1) <= 0:
+        if not m1:
             return str
         # 三英武将匹配
         elif str.find('三英模式') > -1:
@@ -118,7 +119,8 @@ class Achievement(object):
     def __str__(self):
         """以字符串形式返回一条成就"""
         return '%s:%s->%s(%s,%s)' % (self.name, self.condition_node.name,
-                                     self.reward_node.name, self.reward_node.cost, self.reward_count)
+                                     self.reward_node.name,
+                                     self.reward_node.cost, self.reward_count)
 
     def cmp_default(self, other):
         """按照id排序的比较函数"""
@@ -136,7 +138,8 @@ class Achievements:
 
     def __init__(self, characters,
                  raw_achievements_filename=unicode("成就_raw.txt", 'utf8'),
-                 achievements_filename=unicode("成就.txt", 'utf8'), rebuild=False
+                 achievements_filename=unicode("成就.txt", 'utf8'),
+                 rebuild=False
                  ):
         self._characters = characters
 
@@ -155,33 +158,33 @@ class Achievements:
 
     def __preprocess(self, achievements_filename):
         """预处理'成就.txt'中的错误与格式问题"""
-        achievements_text = open(achievements_filename, 'r').read()
+        text = open(achievements_filename, 'r').read()
 
         # 修正错误
-        achievements_text = achievements_text.replace("武之化身 \t\n\n    使用貂蝉",
-                                                      "绝世舞姬 \t\n\n    使用貂蝉", 1)
-        achievements_text = achievements_text.replace("谦虚好学 \t\n\n    在评价",
-                                                      "慧眼如炬 \t\n\n    在评价", 1)
-        achievements_text = achievements_text.replace("夏侯?", "夏侯惇")
-        achievements_text = achievements_text.replace("荀?", "荀彧")
-        achievements_text = achievements_text.replace("指?相赠", "指囷相赠")
-        achievements_text = achievements_text.replace("SP", "Sp")
-        achievements_text = re.sub(r'(?<!SK)王平', "SK王平", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)邓芝', "SK邓芝", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)祖茂', "SK祖茂", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)神陆逊', "SK神陆逊", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)神黄月英', "SK神黄月英", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)神张角', "SK神张角", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)神张辽', "SK神张辽", achievements_text)
-        achievements_text = re.sub(r'(?<!SK)神关羽', "SK神关羽", achievements_text)
+        text = text.replace("武之化身 \t\n\n    使用貂蝉",
+                            "绝世舞姬 \t\n\n    使用貂蝉", 1)
+        text = text.replace("谦虚好学 \t\n\n    在评价",
+                            "慧眼如炬 \t\n\n    在评价", 1)
+        text = text.replace("夏侯?", "夏侯惇")
+        text = text.replace("荀?", "荀彧")
+        text = text.replace("指?相赠", "指囷相赠")
+        text = text.replace("SP", "Sp")
+        text = re.sub(r'(?<!SK)王平', "SK王平", text)
+        text = re.sub(r'(?<!SK)邓芝', "SK邓芝", text)
+        text = re.sub(r'(?<!SK)祖茂', "SK祖茂", text)
+        text = re.sub(r'(?<!SK)神陆逊', "SK神陆逊", text)
+        text = re.sub(r'(?<!SK)神黄月英', "SK神黄月英", text)
+        text = re.sub(r'(?<!SK)神张角', "SK神张角", text)
+        text = re.sub(r'(?<!SK)神张辽', "SK神张辽", text)
+        text = re.sub(r'(?<!SK)神关羽', "SK神关羽", text)
 
         # 处理格式
-        achievements_text = achievements_text.replace(" \t\n\n", "#")
-        achievements_text = achievements_text.replace("\n\n\t", "#")
-        achievements_text = re.sub(r'#\s.+\n\s.+\n\s+', "#", achievements_text)
-        achievements_text = re.sub(r'#\s+', "#", achievements_text)
+        text = text.replace(" \t\n\n", "#")
+        text = text.replace("\n\n\t", "#")
+        text = re.sub(r'#\s.+\n\s.+\n\s+', "#", text)
+        text = re.sub(r'#\s+', "#", text)
 
-        return achievements_text
+        return text
 
     def write_achievements(self, filename):
         """写回成就列表，一般仅在版本更新时使用"""
@@ -221,10 +224,11 @@ class Achievements:
     def sort(self, sortby='default', reverse=False):
         """按照指定方式排序"""
         if sortby == 'default':
-            self._achievements.sort(
-                cmp=Achievement.cmp_default, reverse=reverse)
+            cmp = Achievement.cmp_default
         elif sortby == 'cost':
-            self._achievements.sort(cmp=Achievement.cmp_cost, reverse=reverse)
+            cmp = Achievement.cmp_cost
+        if cmp:
+            self._achievements.sort(cmp, reverse=reverse)
         pass
 
     def get_achievement_list(self):
@@ -241,8 +245,8 @@ class Achievements:
             lambda x: re.match(r'\d+金币', x.cost)
         ).get_character_list())
         character_set.difference_update(set(self.get_reward_characters()))
-        return ['%s:%s' % (x.name, x.cost) for x in sorted(list(character_set),
-                                                           cmp=Character.cmp_cost)]
+        character_list = sorted(list(character_set), cmp=Character.cmp_cost)
+        return ['%s:%s' % (x.name, x.cost) for x in character_list]
 
     def characters_should_use(self):
         # 滤选报酬为武将的成就
@@ -253,7 +257,8 @@ class Achievements:
             lambda x: re.match(r'.+80.+', x.condition))
         # 去掉报酬武将已获得或未发售的成就
         achievements = achievements.filter(
-            lambda x: x.reward_node.cost != '已获得' and x.reward_node.pack != '未发售')
+            lambda x: x.reward_node.cost != '已获得'
+            and x.reward_node.pack != '未发售')
         # 滤选待刷武将已获得的成就
         achievements = achievements.filter(
             lambda x: x.condition_node.cost == '已获得')
@@ -267,13 +272,17 @@ if __name__ == "__main__":
 
     c.buy_characters(
         c.filter(lambda x: re.match(r'\d+铜钱', x.cost)).get_character_names())
-    c.buy_characters(['SK许攸', '曹丕', '张角', '荀彧', '孟获', '徐庶', '庞德', '典韦',
-                      '关平', '刘协', 'SK管辂', 'SK黄月英', 'Sp孙尚香', 'Sp马超'])
-    c.buy_characters(['SR孙权', 'SR黄盖', 'SR周瑜', 'SR马超', 'SR大乔', 'SR貂蝉', 'SR张飞'])
+    c.buy_characters(['SK许攸', '曹丕', '张角', '荀彧', '孟获',
+                      '徐庶', '庞德', '典韦', '关平', '刘协', 'SK管辂',
+                      'SK黄月英', 'Sp孙尚香', 'Sp马超'])
+    c.buy_characters(['SR孙权', 'SR黄盖', 'SR周瑜', 'SR马超',
+                      'SR大乔', 'SR貂蝉', 'SR张飞'])
     a = Achievements(characters=c, rebuild=True)
     a = Achievements(characters=c, rebuild=False)
     a.filter(lambda x: isinstance(x.condition_node, NonCharacter)
-             ).write_achievements_detail(unicode("test/非武将因素成就.txt", 'utf-8'))
+             ).write_achievements_detail(
+        unicode("test/非武将因素成就.txt", 'utf-8')
+    )
     a.sort('cost')
     a.write_achievements_detail(unicode("test/全成就列表细节.txt", 'utf8'))
     print "\n".join(a.characters_should_buy())
