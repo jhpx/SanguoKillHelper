@@ -6,7 +6,6 @@ import re
 import csv
 import copy
 import time
-from collections import OrderedDict
 
 
 class Node(object):
