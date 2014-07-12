@@ -19,10 +19,10 @@ class AchievementsPlot(object):
         """整理武将依赖，按照相同节点先分后合"""
         group = {}
         # 两重循环，但其实第二重最大循环次数也只有2次
-        for x in self._achievements.get_achievement_list():
+        for x in self._achievements:
             for y in x.condition_node.name.split('/'):
                 key = y + "#" + x.reward_node.name
-                group[key] = group.get(key,'') + ',' + x.name
+                group[key] = group.get(key, '') + ',' + x.name
         return [key + "#" + group[key][1:] for key in group.keys()]
 
     def draw_png(self, png_filename=unicode('成就-dot.png', 'utf8')):
@@ -37,8 +37,8 @@ class AchievementsPlot(object):
         for y in self.get_ahievements_data_after_reassign_group():
             # 添加边前添加节点，AGraph会自动处理重复
             info = y.split('#')
-            c0 = self._characters.get_character(info[0])
-            c1 = self._characters.get_character(info[1])
+            c0 = self._characters[info[0]]
+            c1 = self._characters[info[1]]
 
             G.add_node(c0.name.decode('utf8'), color=c0.color, style=c0.style)
             G.add_node(c1.name.decode('utf8'), color=c1.color, style=c1.style)

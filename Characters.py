@@ -5,6 +5,8 @@ import abc
 import re
 import csv
 import copy
+import time
+from collections import OrderedDict
 
 
 class Node(object):
@@ -190,6 +192,7 @@ class Characters(object):
                  cost_filename=unicode("武将价格.txt", 'utf8'), rebuild=False):
         """rebuild为True时，重建'武将列表'"""
         self._char_dic = {}
+        self._iter_index = 0
         if rebuild:
             self._char_dic = self.__read_characters(
                 characters_filename, cost_filename)
@@ -197,7 +200,7 @@ class Characters(object):
             self._char_dic = self.__read_gallery(gallery_filename)
 
         self._sort_list = self._char_dic.keys()
-        self.sort('cost')
+        self.sort('default')
         if rebuild:
             self.write_characters(gallery_filename)
 
@@ -238,38 +241,43 @@ class Characters(object):
         """写回武将列表，一般仅在版本更新时使用"""
         with open(filename, 'wb') as file:
             for name in self._sort_list:
-                x = self.get_character(name)
+                x = self[name]
                 csv.writer(file).writerow([x.name, x.country, x.pack, x.cost])
         pass
 
     def buy_characters(self, name_list):
         """购买一个武将，即修改其价值为'已获得'"""
         for x in name_list:
-            self._char_dic[x].cost = '已获得'
+            if x in self:
+                self[x].cost = '已获得'
         pass
 
     def get_character_names(self):
         """返回目前武将集中可见的所有武将名"""
         return self._sort_list
 
-    def get_character_list(self):
-        """返回目前武将集中可见的所有武将信息"""
-        return [self.get_character(x) for x in self._sort_list]
+#    def get_character_list(self):
+#        """返回目前武将集中可见的所有武将信息"""
+#        return [self[x] for x in self._sort_list]
 
-    def get_character(self, name):
-        """返回目前武将集中所有武将及所有信息"""
-        if name in self._char_dic.keys():
-            return self._char_dic[name]
-        else:
-            return NonCharacter(name)
+    def __getitem__(self, name):
+        """返回目前武将集中指定武将的所有信息"""
+        return self._char_dic.get(name, NonCharacter(name))
+
+    def __contains__(self, name):
+        """返回目前武将集中是否包含该武将"""
+        return name in self._sort_list
+
+    def __iter__(self):
+        """返回目前武将集的迭代器"""
+        return (self[x] for x in self._sort_list)
 
     def filter(self, func):
         """按给定条件筛选"""
-        self._sort_list = [
-            x.name for x in filter(func, self.get_character_list())]
+        tmp = self._sort_list
+        self._sort_list = [x.name for x in filter(func, self)]
         new_obj = copy.copy(self)
-        self._sort_list = self._char_dic.keys()
-        self.sort()
+        self._sort_list = tmp
         return new_obj
 
     def sort(self, sortby='default', reverse=False):
@@ -279,8 +287,9 @@ class Characters(object):
         elif sortby == 'cost':
             cmp = Character.cmp_cost
         if cmp:
-            self._sort_list = [x.name for x in sorted(
-                self.get_character_list(), cmp, reverse=reverse)]
+            dic = [self._char_dic[x] for x in self._sort_list]
+            self._sort_list = [
+                x.name for x in sorted(self, cmp, reverse=reverse)]
         pass
 
     def get_regular(self):
@@ -291,15 +300,18 @@ pass
 
 # 测试程序
 if __name__ == "__main__":
+    t1 = time.time()
     c = Characters(rebuild=True)
     c = Characters()
-    c.get_character_list()
     c.get_character_names()
-    c.get_character('孙权')
-    c.get_character('姜孟冯')
+    c['孙权']
+    c['姜孟冯']
     c.buy_characters(['SR孙权', 'SR黄盖', 'SR周瑜', 'SR马超',
-                      'SR大乔', 'SR貂蝉', 'SR张飞'])
+                      'SR大乔', 'SR貂蝉', 'SR张飞', 'a'])
+    c.sort('cost')
     c.filter(lambda x: x.cost == '已获得').write_characters(
         unicode("test/已获得武将列表.txt", 'utf8'))
     c.write_characters(unicode("test/全部武将列表.txt", 'utf8'))
-    print "all_complete!!"
+
+    t2 = time.time()
+    print "time:", t2 - t1

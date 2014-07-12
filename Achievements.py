@@ -16,12 +16,12 @@ class Achievement(object):
         self._name = name
         self._condition = condition
         self._reward = reward
-        self._condition_node = characters.get_character(
+        self._condition_node = characters[
             self.__match_condition(condition, characters.get_regular())
-        )
-        self._reward_node = characters.get_character(
+        ]
+        self._reward_node = characters[
             self.__match_reward(reward, characters.get_regular())
-        )
+        ]
         self._reward_count = self.__match_count(reward)
 
     @property
@@ -216,9 +216,10 @@ class Achievements:
 
     def filter(self, func):
         """按给定条件筛选"""
+        tmp = self._achievements
         self._achievements = filter(func, self._achievements)
         new_obj = copy.copy(self)
-        self._achievements = self.__read_achievements(self._achievements_text)
+        self._achievements = tmp
         return new_obj
 
     def sort(self, sortby='default', reverse=False):
@@ -231,9 +232,9 @@ class Achievements:
             self._achievements.sort(cmp, reverse=reverse)
         pass
 
-    def get_achievement_list(self):
-        """返回目前成就类中可见的所有成就信息"""
-        return self._achievements
+    def __iter__(self):
+        """迭代器, 返回目前成就类中可见的所有成就信息"""
+        return self._achievements.__iter__()
 
     def get_reward_characters(self):
         """返回目前成就类中可获得的所有武将"""
@@ -243,7 +244,7 @@ class Achievements:
         """获取推荐购买武将的函数"""
         character_set = set(self._characters.filter(
             lambda x: re.match(r'\d+金币', x.cost)
-        ).get_character_list())
+        ))
         character_set.difference_update(set(self.get_reward_characters()))
         character_list = sorted(list(character_set), cmp=Character.cmp_cost)
         return ['%s:%s' % (x.name, x.cost) for x in character_list]
