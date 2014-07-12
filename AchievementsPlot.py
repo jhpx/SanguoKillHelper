@@ -18,16 +18,12 @@ class AchievementsPlot(object):
     def get_ahievements_data_after_reassign_group(self):
         """整理武将依赖，按照相同节点先分后合"""
         group = {}
-        # 三重循环，但其实第二重与第三重最大循环次数也只有2次
+        # 两重循环，但其实第二重最大循环次数也只有2次
         for x in self._achievements.get_achievement_list():
             for y in x.condition_node.name.split('/'):
                 key = y + "#" + x.reward_node.name
-                if key not in group:
-                    group[y + "#" + x.reward_node.name] = x.name
-                else:
-                    group[
-                        y + "#" + x.reward_node.name] += "," + x.name
-        return [a + "#" + group[a] for a in group.keys()]
+                group[key] = group.get(key,'') + ',' + x.name
+        return [key + "#" + group[key][1:] for key in group.keys()]
 
     def draw_png(self, png_filename=unicode('成就-dot.png', 'utf8')):
         """生成一幅武将成就图"""
@@ -60,4 +56,5 @@ class AchievementsPlot(object):
 if __name__ == "__main__":
     c = Characters()
     g = AchievementsPlot(c)
+#    print "\n".join(g.get_ahievements_data_after_reassign_group())
     g.draw_png('test/test.png')
