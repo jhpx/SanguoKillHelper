@@ -169,6 +169,7 @@ class Achievements:
         text = text.replace("荀?", "荀彧")
         text = text.replace("指?相赠", "指囷相赠")
         text = text.replace("SP", "Sp")
+        text = text.replace("颜良", "SK神关羽")
         text = re.sub(r'(?<!SK)王平', "SK王平", text)
         text = re.sub(r'(?<!SK)邓芝', "SK邓芝", text)
         text = re.sub(r'(?<!SK)祖茂', "SK祖茂", text)
