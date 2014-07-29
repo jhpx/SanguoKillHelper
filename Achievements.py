@@ -4,6 +4,7 @@
 import re
 import csv
 import copy
+import time
 from Characters import Characters, Character, NonCharacter
 
 
@@ -191,14 +192,14 @@ class Achievements:
         """写回成就列表，一般仅在版本更新时使用"""
         with open(filename, 'wb') as file:
             for x in self._achievements:
-                csv.writer(file, delimiter='#').writerow(
+                csv.writer(file, delimiter='#', lineterminator='\n').writerow(
                     [x.name, x.condition, x.reward])
 
     def write_achievements_detail(self, filename):
         """全面的成就列表导出"""
         with open(filename, 'wb') as file:
             for x in self._achievements:
-                csv.writer(file, delimiter='#').writerow(
+                csv.writer(file, delimiter='#', lineterminator='\n').writerow(
                     [x.name, x.condition_node.name, x.reward_node.name,
                      x.reward_node.cost, x.reward_count])
 
@@ -270,15 +271,17 @@ class Achievements:
 
 # 测试程序
 if __name__ == "__main__":
+    t1 = time.time()
     c = Characters()
 
     c.buy_characters(
         c.filter(lambda x: re.match(r'\d+铜钱', x.cost)).get_character_names())
-    c.buy_characters(['SK许攸', '曹丕', '张角', '荀彧', '孟获',
-                      '徐庶', '庞德', '典韦', '关平', '刘协', 'SK管辂',
+    c.buy_characters(['SK许攸', '曹丕', '张角', '黄忠', '荀彧', '孟获',
+                      '徐庶', '庞德', '典韦', '关平', '刘禅', '刘协', 'SK管辂',
                       'SK黄月英', 'Sp孙尚香', 'Sp马超'])
-    c.buy_characters(['SR孙权', 'SR黄盖', 'SR周瑜', 'SR马超',
-                      'SR大乔', 'SR貂蝉', 'SR张飞'])
+    c.buy_characters(
+        c.filter(lambda x: re.match(r'SR.+', x.name)).get_character_names()
+    )
     a = Achievements(characters=c, rebuild=True)
     a = Achievements(characters=c, rebuild=False)
     a.filter(lambda x: isinstance(x.condition_node, NonCharacter)
@@ -289,4 +292,6 @@ if __name__ == "__main__":
     a.write_achievements_detail(unicode("test/全成就列表细节.txt", 'utf8'))
     print "\n".join(a.characters_should_buy())
     print "\n".join(a.characters_should_use())
-    print "all_complete!!"
+
+    t2 = time.time()
+    print "time:", t2 - t1

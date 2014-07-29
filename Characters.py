@@ -241,7 +241,8 @@ class Characters(object):
         with open(filename, 'wb') as file:
             for name in self._sort_list:
                 x = self[name]
-                csv.writer(file).writerow([x.name, x.country, x.pack, x.cost])
+                csv_writer = csv.writer(file, lineterminator='\n')
+                csv_writer.writerow([x.name, x.country, x.pack, x.cost])
         pass
 
     def buy_characters(self, name_list):
