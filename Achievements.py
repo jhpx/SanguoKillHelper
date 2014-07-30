@@ -186,6 +186,10 @@ class Achievements:
         text = re.sub(r'#\s.+\n\s.+\n\s+', "#", text)
         text = re.sub(r'#\s+', "#", text)
 
+        # 新增成就
+        text += '\n三天打鱼#在“任务册”内累计领取五次每日任务的奖励(当前等级20或以上)#赠送SK神关羽的前提（1/4）'
+        text += '\n两天晒网#在“任务册”内使用挑战令“直接完成”两个每日任务(当前等级20或以上)#赠送神吕布的前提（1/6）'
+        
         return text
 
     def write_achievements(self, filename):
