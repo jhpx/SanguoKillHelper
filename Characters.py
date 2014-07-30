@@ -88,7 +88,7 @@ class Character(Node):
                 '破军包': 5, '阴阳包': 6, '特别包': 7, '魂烈包': 8, '三英包': 9,
                 '未发售': 10}
     COUNTRY_CLR = {
-        '魏': 'blue', '蜀': 'green', '吴': 'red', '群': 'yellow', '神': 'purple'}
+        '魏': 'blue', '蜀': 'green', '吴': 'red', '群': 'gold', '神': 'purple'}
 
     def __init__(self, name, country, pack, cost):
         self._name = name

@@ -61,7 +61,10 @@ class AchievementsGUI(QMainWindow):
     def createCell(self, content):
         """给定一个武将，创建一个带颜色的Cell"""
         if (isinstance(content,  Character)):
-            return QTableWidgetItem(self.tr(content.name))
+            item = QTableWidgetItem(self.tr(content.name))
+            item.setTextColor(QColor(content.color))
+            item.setSelected(content.cost == '已获得')
+            return item
         else:
             return QTableWidgetItem(self.tr(content))
     
@@ -84,13 +87,22 @@ class AchievementsGUI(QMainWindow):
         # 列头使用卡包名
         for pack in PACK_ORD.keys():
             tw.setHorizontalHeaderItem(int(PACK_ORD[pack]),self.createCell(pack))
-            
+        
+        
+        
         # 内容使用武将名按卡包填充
         for pack in PACK_ORD.keys():
             i = 0
-            for x in self._characters.filter(lambda x: x.pack == pack).get_character_names():
-                tw.setItem(i, int(PACK_ORD[pack]), self.createCell(x))
+            for c in self._characters.filter(lambda x: x.pack == pack):
+                j = int(PACK_ORD[pack])
+                tw.setItem(i, j, self.createCell(c))
+                if (c.cost == '已获得'):
+                    tw.selectionModel().select(tw.model().index(i,j), QItemSelectionModel.Select)
                 i += 1
+                
+        tw.verticalHeader().setVisible(False)
+        tw.setEditTriggers(QTableWidget.NoEditTriggers)
+        tw.setSelectionMode(QTableWidget.MultiSelection)
         tw.resizeColumnsToContents()
         
         #注册信号关联
@@ -109,7 +121,10 @@ class AchievementsGUI(QMainWindow):
         
     def updateAchievementsAbout(self):   
        """显示所选武将相关所有成就"""
-       achievements = Achievements(self._characters)
+       achievements = Achievements(self._characters).filter(
+            lambda x: x.condition_node.cost == '已获得' \
+            or x.reward_node.cost == '已获得'
+            )
        text = "\n".join([str(x) for x in achievements])
        self._mainDisplay.setText(self.tr(text))
        pass
