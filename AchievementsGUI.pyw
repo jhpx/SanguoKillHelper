@@ -7,16 +7,17 @@ import sys
 from Characters import Characters, Character, NonCharacter
 from Achievements import Achievements
 
+
 class AchievementsGUI(QMainWindow):
 
     def __init__(self, parent=None):
         super(AchievementsGUI, self).__init__(parent)
         # 中文hook
         QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
-        
+
         # 载入武将
         self._characters = Characters()
-        
+
         # 载入界面控件
         self.initMenu()
         self._charaSelectTable = self.createTable()
@@ -28,13 +29,14 @@ class AchievementsGUI(QMainWindow):
         self.setCentralWidget(self._charaSelectTable)
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
         self.resize(800, 600)
-        
+
     def initMenu(self):
         """初始化菜单栏"""
         achievementsMenu = self.menuBar().addMenu(self.tr("成就"))
 
         about = QAction(self.tr("相关成就"), self)
-        self.connect(about, SIGNAL("triggered()"), self.updateAchievementsAbout)
+        self.connect(
+            about, SIGNAL("triggered()"), self.updateAchievementsAbout)
         achievementsMenu.addAction(about)
 
         how = QAction(self.tr("获得方法"), self)
@@ -67,7 +69,7 @@ class AchievementsGUI(QMainWindow):
             return item
         else:
             return QTableWidgetItem(self.tr(content))
-    
+
     def createTable(self):
         """创建主窗口，用于展示与选择武将"""
         # 仅为缩短代码
@@ -76,20 +78,20 @@ class AchievementsGUI(QMainWindow):
         column = len(PACK_ORD)
         # 各卡包里武将数的最大值为最大行数
         row = 8
-        
+
         for pack in PACK_ORD.keys():
-            c = self._characters.filter(lambda x: x.pack == pack).get_character_names()
+            c = self._characters.filter(
+                lambda x: x.pack == pack).get_character_names()
             row = len(c) > row and len(c) or row
-            
+
         # 按所计算行列数创建表格
         tw = QTableWidget(row, column)
-        
+
         # 列头使用卡包名
         for pack in PACK_ORD.keys():
-            tw.setHorizontalHeaderItem(int(PACK_ORD[pack]),self.createCell(pack))
-        
-        
-        
+            tw.setHorizontalHeaderItem(
+                int(PACK_ORD[pack]), self.createCell(pack))
+
         # 内容使用武将名按卡包填充
         for pack in PACK_ORD.keys():
             i = 0
@@ -97,15 +99,16 @@ class AchievementsGUI(QMainWindow):
                 j = int(PACK_ORD[pack])
                 tw.setItem(i, j, self.createCell(c))
                 if (c.cost == '已获得'):
-                    tw.selectionModel().select(tw.model().index(i,j), QItemSelectionModel.Select)
+                    tw.selectionModel().select(
+                        tw.model().index(i, j), QItemSelectionModel.Select)
                 i += 1
-                
+
         tw.verticalHeader().setVisible(False)
         tw.setEditTriggers(QTableWidget.NoEditTriggers)
         tw.setSelectionMode(QTableWidget.MultiSelection)
         tw.resizeColumnsToContents()
-        
-        #注册信号关联
+
+        # 注册信号关联
         return tw
 
     def createDisplayDock(self):
@@ -118,32 +121,41 @@ class AchievementsGUI(QMainWindow):
         te3.setMinimumHeight(150)
         dock.setWidget(te3)
         return dock
-        
-    def updateAchievementsAbout(self):   
-       """显示所选武将相关所有成就"""
-       achievements = Achievements(self._characters).filter(
-            lambda x: x.condition_node.cost == '已获得' \
-            or x.reward_node.cost == '已获得'
-            )
-       text = "\n".join([str(x) for x in achievements])
-       self._mainDisplay.setText(self.tr(text))
-       pass
-       
+
+    def selectedCharacters(self):
+        table = self._charaSelectTable
+        return [unicode(
+            table.item(idx.row(), idx.column()).text()
+        ).encode('utf8') for idx in table.selectedIndexes()]
+
+    def updateAchievementsAbout(self):
+        """显示所选武将相关所有成就"""
+        selected = self.selectedCharacters()
+        achievements = Achievements(self._characters).filter(
+            lambda x: x.condition_node.name in selected
+            or x.reward_node.name in selected
+        )
+        text = "\n".join([str(x) for x in achievements])
+        self._mainDisplay.setText(self.tr(text))
+        pass
+
     def updateAchievementsHow(self):
-       """显示所选武将的获得方法"""
-       achievements = Achievements(self._characters).filter(
-            lambda x: x.reward_node.cost == '已获得')
-       text = "\n".join([str(x) for x in achievements])
-       self._mainDisplay.setText(self.tr(text))
-       pass
-       
-    def updateAchievementsUse(self):   
-       """显示使用所选武将所对应的成就"""
-       achievements = Achievements(self._characters).filter(
-            lambda x: x.condition_node.cost == '已获得')
-       text = "\n".join([str(x) for x in achievements])
-       self._mainDisplay.setText(self.tr(text))
-       pass
+        """显示所选武将的获得方法"""
+        selected = self.selectedCharacters()
+        achievements = Achievements(self._characters).filter(
+            lambda x: x.reward_node.name in selected)
+        text = "\n".join([str(x) for x in achievements])
+        self._mainDisplay.setText(self.tr(text))
+        pass
+
+    def updateAchievementsUse(self):
+        """显示使用所选武将所对应的成就"""
+        selected = self.selectedCharacters()
+        achievements = Achievements(self._characters).filter(
+            lambda x: x.condition_node.name in selected)
+        text = "\n".join([str(x) for x in achievements])
+        self._mainDisplay.setText(self.tr(text))
+        pass
 
 app = QApplication(sys.argv)
 main = AchievementsGUI()

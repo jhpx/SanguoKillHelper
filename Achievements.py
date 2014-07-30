@@ -189,7 +189,7 @@ class Achievements:
         # 新增成就
         text += '\n三天打鱼#在“任务册”内累计领取五次每日任务的奖励(当前等级20或以上)#赠送SK神关羽的前提（1/4）'
         text += '\n两天晒网#在“任务册”内使用挑战令“直接完成”两个每日任务(当前等级20或以上)#赠送神吕布的前提（1/6）'
-        
+
         return text
 
     def write_achievements(self, filename):
@@ -242,7 +242,7 @@ class Achievements:
         """迭代器, 返回目前成就类中可见的所有成就信息"""
         return self._achievements.__iter__()
 
-    def get_reward_characters(self):
+    def reward_characters(self):
         """返回目前成就类中可获得的所有武将"""
         return [x.reward_node for x in self._achievements]
 
@@ -251,7 +251,7 @@ class Achievements:
         character_set = set(self._characters.filter(
             lambda x: re.match(r'\d+金币', x.cost)
         ))
-        character_set.difference_update(set(self.get_reward_characters()))
+        character_set.difference_update(set(self.reward_characters()))
         character_list = sorted(list(character_set), cmp=Character.cmp_cost)
         return ['%s:%s' % (x.name, x.cost) for x in character_list]
 
@@ -280,13 +280,14 @@ if __name__ == "__main__":
 
     c.buy_characters(
         c.filter(lambda x: re.match(r'\d+铜钱', x.cost)).get_character_names())
-    c.buy_characters(['SK许攸', '曹丕', '张角', '黄忠', '荀彧', '张春华','廖化','刘表'
-                       ,'孟获', '荀彧', '张郃',  
-                       '刘禅', '徐庶', '蔡文姬', '庞德', '典韦', '鲁肃',
-                       'SK神张角', 'SK神黄月英'
-                       ])
+    c.buy_characters(['SK许攸', '曹丕', '张角', '黄忠', '张春华', '廖化', '刘表',
+                      '孟获', '荀彧', '张郃',
+                      '刘禅', '徐庶', '蔡文姬', '庞德', '典韦', '鲁肃',
+                      'SK神张角', 'SK神黄月英'
+                      ])
     c.buy_characters(
-        c.filter(lambda x: re.match(r'破军包|阴阳包|特别包', x.pack)).get_character_names()
+        c.filter(
+            lambda x: re.match(r'破军包|阴阳包|特别包', x.pack)).get_character_names()
     )
     c.buy_characters(
         c.filter(lambda x: re.match(r'SR.+', x.name)).get_character_names()

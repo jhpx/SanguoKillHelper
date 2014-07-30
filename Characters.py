@@ -256,10 +256,6 @@ class Characters(object):
         """返回目前武将集中可见的所有武将名"""
         return self._sort_list
 
-#    def get_character_list(self):
-#        """返回目前武将集中可见的所有武将信息"""
-#        return [self[x] for x in self._sort_list]
-
     def __getitem__(self, name):
         """返回目前武将集中指定武将的所有信息"""
         return self._char_dic.get(name, NonCharacter(name))
