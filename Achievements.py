@@ -129,7 +129,7 @@ class Achievement(object):
 
     def cmp_cost(self, other):
         """按照cost排序的比较函数"""
-        return cmp(self._reward_node, other._reward_node)
+        return self._reward_node.cmp_cost(other._reward_node)
     pass
 
 
@@ -276,9 +276,14 @@ if __name__ == "__main__":
 
     c.buy_characters(
         c.filter(lambda x: re.match(r'\d+铜钱', x.cost)).get_character_names())
-    c.buy_characters(['SK许攸', '曹丕', '张角', '黄忠', '荀彧', '孟获',
-                      '徐庶', '庞德', '典韦', '关平', '刘禅', '刘协', 'SK管辂',
-                      'SK黄月英', 'Sp孙尚香', 'Sp马超'])
+    c.buy_characters(['SK许攸', '曹丕', '张角', '黄忠', '荀彧', '张春华','廖化','刘表'
+                       ,'孟获', '荀彧', '张郃',  
+                       '刘禅', '徐庶', '蔡文姬', '庞德', '典韦', '鲁肃',
+                       'SK神张角', 'SK神黄月英'
+                       ])
+    c.buy_characters(
+        c.filter(lambda x: re.match(r'破军包|阴阳包|特别包', x.pack)).get_character_names()
+    )
     c.buy_characters(
         c.filter(lambda x: re.match(r'SR.+', x.name)).get_character_names()
     )
