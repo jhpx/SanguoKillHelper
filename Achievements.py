@@ -119,9 +119,11 @@ class Achievement(object):
 
     def __str__(self):
         """以字符串形式返回一条成就"""
-        return '%s:%s->%s(%s,%s)' % (self.name, self.condition_node.name,
+        return '{}:{}->{}({},{})'.format(
+                                     self.name, self.condition,
                                      self.reward_node.name,
-                                     self.reward_node.cost, self.reward_count)
+                                     self.reward_node.cost, self.reward_count
+                                     )
 
     def cmp_default(self, other):
         """按照id排序的比较函数"""
@@ -170,7 +172,7 @@ class Achievements:
         text = text.replace("荀?", "荀彧")
         text = text.replace("指?相赠", "指囷相赠")
         text = text.replace("SP", "Sp")
-        text = text.replace("颜良", "SK神关羽")
+        text = text.replace("颜良的前提（1/3）", "SK神关羽的前提（1/4）")
         text = re.sub(r'(?<!SK)王平', "SK王平", text)
         text = re.sub(r'(?<!SK)邓芝', "SK邓芝", text)
         text = re.sub(r'(?<!SK)祖茂', "SK祖茂", text)
@@ -253,15 +255,12 @@ class Achievements:
         ))
         character_set.difference_update(set(self.reward_characters()))
         character_list = sorted(list(character_set), cmp=Character.cmp_cost)
-        return ['%s:%s' % (x.name, x.cost) for x in character_list]
+        return ['{}:{}'.format(x.name, x.cost) for x in character_list]
 
     def characters_should_use(self):
         # 滤选报酬为武将的成就
         achievements = self.filter(
             lambda x: isinstance(x.reward_node, Character))
-        # 滤选内容为80胜的成就
-        achievements = achievements.filter(
-            lambda x: re.match(r'.+80.+', x.condition))
         # 去掉报酬武将已获得或未发售的成就
         achievements = achievements.filter(
             lambda x: x.reward_node.cost != '已获得'

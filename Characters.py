@@ -157,7 +157,7 @@ class Character(Node):
 
     def __str__(self):
         """以字符串形式返回一个武将的所有属性"""
-        return '%s,%s,%s,%s' % (self._name, self._country,
+        return '{},{},{},{}'.format(self._name, self._country,
                                 self._pack, self.cost)
 
     def cmp_default(x, y):
@@ -267,7 +267,7 @@ class Characters(object):
     def __iter__(self):
         """返回目前武将集的迭代器"""
         return (self[x] for x in self._sort_list)
-
+    
     def filter(self, func):
         """按给定条件筛选"""
         tmp = self._sort_list
