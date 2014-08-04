@@ -25,7 +25,7 @@ class Achievement(object):
             self.__match_reward(reward, characters.get_regular())
         ]
         self._reward_count = self.__match_count(reward)
-        
+
     @property
     def id(self):
         """返回成就id"""
@@ -60,7 +60,7 @@ class Achievement(object):
     def reward_count(self):
         """返回报酬计数"""
         return self._reward_count
-        
+
     def __match_condition(self, str, reg_characters):
         """
         正则匹配原因节点(单武将或双武将或其它),结果返回一个String
@@ -121,10 +121,10 @@ class Achievement(object):
     def __str__(self):
         """以字符串形式返回一条成就"""
         return '{}:{}->{}({},{})'.format(
-                                     self.name, self.condition,
-                                     self.reward_node.name,
-                                     self.reward_node.cost, self.reward_count
-                                     )
+            self.name, self.condition,
+            self.reward_node.name,
+            self.reward_node.cost, self.reward_count
+        )
 
     def cmp_default(self, other):
         """按照id排序的比较函数"""
@@ -155,7 +155,7 @@ class Achievements:
 
         self._achievements = self.__read_achievements(self._achievements_text)
         if rebuild:
-             self.write_achievements(achievements_filename)
+            self.write_achievements(achievements_filename)
         pass
 
     def __preprocess(self):
@@ -331,7 +331,7 @@ class Achievements:
         text += '\n曹魏谋主#使用荀攸获得80场标准模式游戏胜利。#赠送SK神司马懿的前提（1/7）'
         text += '\n刀剑封魔#在“任务册”中完成三英任务一次(当前等级18或以上)#赠送SK神司马懿的前提（1/7）'
 
-        #强制排错
+        # 强制排错
         text = re.sub(r'(?<!SK)王平', "SK王平", text)
         text = re.sub(r'(?<!SK)邓芝', "SK邓芝", text)
         text = re.sub(r'(?<!SK)祖茂', "SK祖茂", text)
@@ -341,7 +341,7 @@ class Achievements:
         text = re.sub(r'(?<!SK)神张辽', "SK神张辽", text)
         text = re.sub(r'(?<!SK)神关羽', "SK神关羽", text)
         text = re.sub(r'(?<!SK)神司马懿', "SK神司马懿", text)
-        
+
         return text
 
     def write_achievements(self, filename):

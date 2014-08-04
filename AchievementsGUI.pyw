@@ -8,8 +8,9 @@ from Characters import Characters, Character, NonCharacter
 from Achievements import Achievements
 from AchievementsPlot import AchievementsPlot
 
+
 class AchievementsGUI(QMainWindow):
-    
+
     def __init__(self, parent=None):
         super(AchievementsGUI, self).__init__(parent)
         # 中文hook
@@ -17,15 +18,13 @@ class AchievementsGUI(QMainWindow):
 
         # 载入武将与卡包
         self._characters = Characters()
-        self._packs  = [0] * len(Character.PACK_ORD.keys())
+        self._packs = [0] * len(Character.PACK_ORD.keys())
         for p in Character.PACK_ORD.keys():
-             self._packs[int(Character.PACK_ORD[p])] = p
-        
+            self._packs[int(Character.PACK_ORD[p])] = p
+
         # 缓存所有已获得武将
-#        self._owncharacters = 
-        
-  
-        
+#        self._owncharacters =
+
         # 载入界面控件
         self.initMenu()
         self._charaSelectTable = self.createTable()
@@ -41,31 +40,31 @@ class AchievementsGUI(QMainWindow):
     def initMenu(self):
         """初始化菜单栏"""
         selectMenu = self.menuBar().addMenu(self.tr("选择"))
-        
+
         own = QAction(self.tr("选中已获得武将"), self)
         self.connect(own, SIGNAL("triggered()"), self.selectOwn)
         selectMenu.addAction(own)
-        
+
         shu = QAction(self.tr("选中蜀国武将"), self)
         self.connect(shu, SIGNAL("triggered()"), self.selectShu)
         selectMenu.addAction(shu)
-        
+
         wei = QAction(self.tr("选中魏国武将"), self)
         self.connect(wei, SIGNAL("triggered()"), self.selectWei)
         selectMenu.addAction(wei)
-        
+
         wu = QAction(self.tr("选中吴国武将"), self)
         self.connect(wu, SIGNAL("triggered()"), self.selectWu)
         selectMenu.addAction(wu)
-        
+
         qun = QAction(self.tr("选中群雄武将"), self)
         self.connect(qun, SIGNAL("triggered()"), self.selectQun)
         selectMenu.addAction(qun)
-        
+
         cancel = QAction(self.tr("取消所有选中"), self)
         self.connect(cancel, SIGNAL("triggered()"), self.selectCancel)
         selectMenu.addAction(cancel)
-        
+
         achievementsMenu = self.menuBar().addMenu(self.tr("成就"))
 
         about = QAction(self.tr("相关成就"), self)
@@ -86,7 +85,7 @@ class AchievementsGUI(QMainWindow):
         achievementsMenu.addAction(draw)
 
         adviceMenu = self.menuBar().addMenu(self.tr("推荐"))
-        
+
         buy = QAction(self.tr("购买选中武将"), self)
         self.connect(buy, SIGNAL("triggered()"), self.buyCharacters)
         adviceMenu.addAction(buy)
@@ -98,7 +97,7 @@ class AchievementsGUI(QMainWindow):
         shouldUse = QAction(self.tr("推荐使用武将"), self)
         self.connect(shouldUse, SIGNAL("triggered()"), self.showShouldUse)
         adviceMenu.addAction(shouldUse)
-        
+
     def createCell(self, character):
         """给定一个武将，创建一个带颜色的Cell"""
         item = QTableWidgetItem(self.tr(character.name))
@@ -114,7 +113,7 @@ class AchievementsGUI(QMainWindow):
         column = len(self._packs)
         # 各卡包里武将数的最大值为最大行数
         row = 8
-    
+
         for pack in self._packs:
             c = self._characters.filter(
                 lambda x: x.pack == pack).get_character_names()
@@ -142,7 +141,7 @@ class AchievementsGUI(QMainWindow):
         tw.resizeColumnsToContents()
 
         return tw
-        
+
     def createDisplayDock(self):
         """创建停靠窗口，用于显示成就与推荐武将"""
         dock = QDockWidget(self.tr("结果"), self)
@@ -164,9 +163,9 @@ class AchievementsGUI(QMainWindow):
                 if(c.cost == '已获得'):
                     tw.selectionModel().select(
                         tw.model().index(i, j), QItemSelectionModel.Select)
-                        
+
                 i += 1
-                
+
     def selectShu(self):
         """选中所有蜀国武将"""
         tw = self._charaSelectTable
@@ -177,9 +176,9 @@ class AchievementsGUI(QMainWindow):
                 if(c.country == '蜀'):
                     tw.selectionModel().select(
                         tw.model().index(i, j), QItemSelectionModel.Select)
-                        
+
                 i += 1
-                
+
     def selectWei(self):
         """选中所有魏国武将"""
         tw = self._charaSelectTable
@@ -190,9 +189,9 @@ class AchievementsGUI(QMainWindow):
                 if(c.country == '魏'):
                     tw.selectionModel().select(
                         tw.model().index(i, j), QItemSelectionModel.Select)
-                        
+
                 i += 1
-                
+
     def selectWu(self):
         """选中所有吴国武将"""
         tw = self._charaSelectTable
@@ -203,7 +202,7 @@ class AchievementsGUI(QMainWindow):
                 if(c.country == '吴'):
                     tw.selectionModel().select(
                         tw.model().index(i, j), QItemSelectionModel.Select)
-                        
+
                 i += 1
 
     def selectQun(self):
@@ -216,8 +215,9 @@ class AchievementsGUI(QMainWindow):
                 if(c.country == '群'):
                     tw.selectionModel().select(
                         tw.model().index(i, j), QItemSelectionModel.Select)
-                        
+
                 i += 1
+
     def selectCancel(self):
         """取消全部武将选中"""
         self._charaSelectTable.selectionModel().clearSelection()
@@ -231,7 +231,7 @@ class AchievementsGUI(QMainWindow):
             if item:
                 items.append(item)
         return items
-        
+
     def selectedCharacterNames(self):
         """获得所有选中的武将名"""
         names = []
@@ -244,7 +244,7 @@ class AchievementsGUI(QMainWindow):
     def updateAchievementsAbout(self):
         """显示所选武将相关所有成就"""
         selected = self.selectedCharacterNames()
-        
+
         achievements = Achievements(self._characters).filter(
             lambda x: x.condition_node.name in selected
             or x.reward_node.name in selected
@@ -277,11 +277,11 @@ class AchievementsGUI(QMainWindow):
         text = "请查看成就.png"
         try:
             AchievementsPlot(self._characters).draw_png()
-        except Exception as err: 
+        except Exception as err:
             text = str(err)
         self._mainDisplay.setText(self.tr(text))
         pass
-        
+
     def buyCharacters(self):
         """购买选中武将"""
         selected = self.selectedCharacterNames()
@@ -290,21 +290,21 @@ class AchievementsGUI(QMainWindow):
             character = self._characters[unicode(item.text()).encode('utf8')]
             item.setTextColor(QColor(character.color))
         self.selectCancel()
-        
+
     def showShouldBuy(self):
         """显示推荐购买武将"""
         achievements = Achievements(self._characters)
         text = "\n".join(achievements.characters_should_buy())
         self._mainDisplay.setText(self.tr(text))
-        return 
-        
+        return
+
     def showShouldUse(self):
         """显示推荐使用武将"""
         achievements = Achievements(self._characters)
         text = "\n".join(achievements.characters_should_use())
         self._mainDisplay.setText(self.tr(text))
         return
-        
+
 app = QApplication(sys.argv)
 main = AchievementsGUI()
 main.show()
