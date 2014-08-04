@@ -46,6 +46,22 @@ class AchievementsGUI(QMainWindow):
         self.connect(own, SIGNAL("triggered()"), self.selectOwn)
         selectMenu.addAction(own)
         
+        shu = QAction(self.tr("选中蜀国武将"), self)
+        self.connect(shu, SIGNAL("triggered()"), self.selectShu)
+        selectMenu.addAction(shu)
+        
+        wei = QAction(self.tr("选中魏国武将"), self)
+        self.connect(wei, SIGNAL("triggered()"), self.selectWei)
+        selectMenu.addAction(wei)
+        
+        wu = QAction(self.tr("选中吴国武将"), self)
+        self.connect(wu, SIGNAL("triggered()"), self.selectWu)
+        selectMenu.addAction(wu)
+        
+        qun = QAction(self.tr("选中群雄武将"), self)
+        self.connect(qun, SIGNAL("triggered()"), self.selectQun)
+        selectMenu.addAction(qun)
+        
         cancel = QAction(self.tr("取消所有选中"), self)
         self.connect(cancel, SIGNAL("triggered()"), self.selectCancel)
         selectMenu.addAction(cancel)
@@ -150,7 +166,58 @@ class AchievementsGUI(QMainWindow):
                         tw.model().index(i, j), QItemSelectionModel.Select)
                         
                 i += 1
+                
+    def selectShu(self):
+        """选中所有蜀国武将"""
+        tw = self._charaSelectTable
+        for j in range(len(self._packs)):
+            i = 0
+            pack = self._packs[j]
+            for c in self._characters.filter(lambda x: x.pack == pack):
+                if(c.country == '蜀'):
+                    tw.selectionModel().select(
+                        tw.model().index(i, j), QItemSelectionModel.Select)
+                        
+                i += 1
+                
+    def selectWei(self):
+        """选中所有魏国武将"""
+        tw = self._charaSelectTable
+        for j in range(len(self._packs)):
+            i = 0
+            pack = self._packs[j]
+            for c in self._characters.filter(lambda x: x.pack == pack):
+                if(c.country == '魏'):
+                    tw.selectionModel().select(
+                        tw.model().index(i, j), QItemSelectionModel.Select)
+                        
+                i += 1
+                
+    def selectWu(self):
+        """选中所有吴国武将"""
+        tw = self._charaSelectTable
+        for j in range(len(self._packs)):
+            i = 0
+            pack = self._packs[j]
+            for c in self._characters.filter(lambda x: x.pack == pack):
+                if(c.country == '吴'):
+                    tw.selectionModel().select(
+                        tw.model().index(i, j), QItemSelectionModel.Select)
+                        
+                i += 1
 
+    def selectQun(self):
+        """选中所有群雄武将"""
+        tw = self._charaSelectTable
+        for j in range(len(self._packs)):
+            i = 0
+            pack = self._packs[j]
+            for c in self._characters.filter(lambda x: x.pack == pack):
+                if(c.country == '群'):
+                    tw.selectionModel().select(
+                        tw.model().index(i, j), QItemSelectionModel.Select)
+                        
+                i += 1
     def selectCancel(self):
         """取消全部武将选中"""
         self._charaSelectTable.selectionModel().clearSelection()
