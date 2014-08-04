@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 import sys
 from Characters import Characters, Character, NonCharacter
 from Achievements import Achievements
-
+from AchievementsPlot import AchievementsPlot
 
 class AchievementsGUI(QMainWindow):
     
@@ -82,7 +82,7 @@ class AchievementsGUI(QMainWindow):
         achievementsMenu.addAction(use)
 
         draw = QAction(self.tr("生成成就关系图"), self)
-        self.connect(draw, SIGNAL("triggered()"), self, SLOT(""))
+        self.connect(draw, SIGNAL("triggered()"), self.generateGraph)
         achievementsMenu.addAction(draw)
 
         adviceMenu = self.menuBar().addMenu(self.tr("推荐"))
@@ -272,6 +272,16 @@ class AchievementsGUI(QMainWindow):
         self._mainDisplay.setText(self.tr(text))
         pass
 
+    def generateGraph(self):
+        """生成全部武将成就关系图"""
+        text = "请查看成就.png"
+        try:
+            AchievementsPlot(self._characters).draw_png()
+        except Exception as err: 
+            text = str(err)
+        self._mainDisplay.setText(self.tr(text))
+        pass
+        
     def buyCharacters(self):
         """购买选中武将"""
         selected = self.selectedCharacterNames()
