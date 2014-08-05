@@ -420,7 +420,11 @@ class Achievements:
             lambda x: x.condition_node.cost == '已获得')
 
         achievements.sort('cost', True)
-        return [str(x) for x in achievements._achievements]
+        return ['{}:{}->{}({},{})'.format(
+            x.name, x.condition_node.name,
+            x.reward_node.name,
+            x.reward_node.cost, x.reward_count
+            ) for x in achievements._achievements]
 
 # 测试程序
 if __name__ == "__main__":

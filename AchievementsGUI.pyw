@@ -97,6 +97,11 @@ class AchievementsGUI(QMainWindow):
         shouldUse = QAction(self.tr("推荐使用武将"), self)
         self.connect(shouldUse, SIGNAL("triggered()"), self.showShouldUse)
         adviceMenu.addAction(shouldUse)
+        
+        save = QAction(self.tr("保存购买结果"), self)
+        self.connect(save, SIGNAL("triggered()"), self.saveBuy)
+        adviceMenu.addAction(save)
+        
 
     def createCell(self, character):
         """给定一个武将，创建一个带颜色的Cell"""
@@ -290,21 +295,27 @@ class AchievementsGUI(QMainWindow):
             character = self._characters[unicode(item.text()).encode('utf8')]
             item.setTextColor(QColor(character.color))
         self.selectCancel()
-
+        pass
+        
     def showShouldBuy(self):
         """显示推荐购买武将"""
         achievements = Achievements(self._characters)
         text = "\n".join(achievements.characters_should_buy())
         self._mainDisplay.setText(self.tr(text))
-        return
+        pass
 
     def showShouldUse(self):
         """显示推荐使用武将"""
         achievements = Achievements(self._characters)
         text = "\n".join(achievements.characters_should_use())
         self._mainDisplay.setText(self.tr(text))
-        return
-
+        pass
+    
+    def saveBuy(self):
+        """保存购买结果"""
+        self._characters.write_characters(unicode("武将列表.txt", 'utf8'))
+        pass
+        
 app = QApplication(sys.argv)
 main = AchievementsGUI()
 main.show()
