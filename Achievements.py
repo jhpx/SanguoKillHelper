@@ -21,10 +21,12 @@ class Achievement(object):
         self._condition_node = characters[
             self.__match_condition(condition, characters.get_regular())
         ]
+        self._condition_count = self.__match_count_condition(condition)
+
         self._reward_node = characters[
             self.__match_reward(reward, characters.get_regular())
         ]
-        self._reward_count = self.__match_count(reward)
+        self._reward_count = self.__match_count_reward(reward)
 
     @property
     def id(self):
@@ -45,6 +47,11 @@ class Achievement(object):
     def condition_node(self):
         """返回条件节点（武将/非武将）名称列表"""
         return self._condition_node
+
+    @property
+    def condition_count(self):
+        """返回条件计数"""
+        return self._condition_count
 
     @property
     def reward(self):
@@ -109,15 +116,23 @@ class Achievement(object):
             content = ''
         return content
 
-    def __match_count(self, str):
-        # 完成度匹配
+    def __match_count_condition(self, str):
+        # 条件计数匹配
+        m0 = re.search(r'\d+(?!金)(?!\d)', str)
+        if m0:
+            count = m0.group()
+        else:
+            count = '1'
+        return count
+
+    def __match_count_reward(self, str):
+        # 报酬计数匹配
         m0 = re.search(r'1/\d+', str)
         if m0:
             count = m0.group()
         else:
             count = '1/1'
         return count
-
     def __str__(self):
         """以字符串形式返回一条成就"""
         return '{}:{}->{}({},{})'.format(
@@ -356,8 +371,8 @@ class Achievements:
         with open(filename, 'wb') as file:
             for x in self._achievements:
                 csv.writer(file, delimiter='#', lineterminator='\n').writerow(
-                    [x.name, x.condition_node.name, x.reward_node.name,
-                     x.reward_node.cost, x.reward_count])
+                    [x.name, x.condition_node.name, x.condition_count,
+                     x.reward_node.name, x.reward_node.cost, x.reward_count])
 
     def __read_achievements(self, text):
         """读取成就，整理成成就列表。"""
@@ -408,6 +423,7 @@ class Achievements:
         return ['{}:{}'.format(x.name, x.cost) for x in character_list]
 
     def characters_should_use(self):
+
         # 滤选报酬为武将的成就
         achievements = self.filter(
             lambda x: isinstance(x.reward_node, Character))
@@ -420,11 +436,7 @@ class Achievements:
             lambda x: x.condition_node.cost == '已获得')
 
         achievements.sort('cost', True)
-        return ['{}:{}->{}({},{})'.format(
-            x.name, x.condition_node.name,
-            x.reward_node.name,
-            x.reward_node.cost, x.reward_count
-            ) for x in achievements._achievements]
+        return achievements
 
 # 测试程序
 if __name__ == "__main__":
