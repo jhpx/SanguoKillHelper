@@ -307,7 +307,7 @@ class AchievementsGUI(QMainWindow):
     def showShouldUse(self):
         """显示推荐使用武将"""
         achievements = Achievements(self._characters)
-
+        self._mainDisplay.clear()
         for x in achievements.characters_should_use():
             text= '{}:{}->{}({},{})'.format(
             x.name, x.condition_node.name,
