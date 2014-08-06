@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 # Achievements.py
 # Author: Jiangmf
+# Date: 2014-07-08
 import re
 import csv
 import os
@@ -133,6 +134,7 @@ class Achievement(object):
         else:
             count = '1/1'
         return count
+
     def __str__(self):
         """以字符串形式返回一条成就"""
         return '{}:{}->{}({},{})'.format(

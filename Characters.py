@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 # Characters.py
 # Author: Jiangmf
+# Date: 2014-07-08
 import abc
 import re
 import os

@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 # AchievementsGUI.pyw
 # Author: Jiangmf
+# Date: 2014-07-30
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
@@ -101,7 +102,6 @@ class AchievementsGUI(QMainWindow):
         save = QAction(self.tr("保存购买结果"), self)
         self.connect(save, SIGNAL("triggered()"), self.saveBuy)
         adviceMenu.addAction(save)
-
 
     def createCell(self, character):
         """给定一个武将，创建一个带颜色的Cell"""
@@ -309,14 +309,14 @@ class AchievementsGUI(QMainWindow):
         achievements = Achievements(self._characters)
         self._mainDisplay.clear()
         for x in achievements.characters_should_use():
-            text= '{}:{}->{}({},{})'.format(
-            x.name, x.condition_node.name,
-            x.reward_node.name,
-            x.reward_node.cost, x.reward_count
+            text = '{}:{}->{}({},{})'.format(
+                x.name, x.condition_node.name,
+                x.reward_node.name,
+                x.reward_node.cost, x.reward_count
             )
 
             if x.condition_count == '80':
-                text='<B>'+text+'</B>'
+                text = '<B>' + text + '</B>'
             self._mainDisplay.append(self.tr(text))
         pass
 
