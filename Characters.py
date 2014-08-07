@@ -65,7 +65,7 @@ class NonCharacter(Node):
     @property
     def cost(self):
         """返回不可购买"""
-        return self._cost > 1000 and '不可购买' or str(int(self._cost)) + '金币'
+        return'不可购买' if self._cost > 1000 else str(self._cost) + '金币'
 
     def cmp_cost(self, other):
         """按价值的比较函数"""

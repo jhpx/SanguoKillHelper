@@ -122,7 +122,7 @@ class AchievementsGUI(QMainWindow):
         for pack in self._packs:
             c = self._characters.filter(
                 lambda x: x.pack == pack).get_character_names()
-            row = len(c) > row and len(c) or row
+            row = len(c) if len(c) > row else row
 
         # 按所计算行列数创建表格
         tw = QTableWidget(row, column)
