@@ -453,6 +453,10 @@ class Achievements:
 
     def write_achievements(self, filename):
         """写回成就列表，一般仅在版本更新时使用"""
+        filedir = filename[:filename.rfind('/')]
+        if not os.path.exists(filedir):
+            os.makedirs(filedir)
+
         with open(filename, 'wb') as file:
             for x in self._achievements:
                 csv.writer(file, delimiter='#', lineterminator='\n').writerow(
@@ -472,8 +476,7 @@ class Achievements:
         achievements = []
         achievements_list = [line.split('#')
                              for line in text.split('\n') if line != '']
-        for i in range(len(achievements_list)):
-            x = achievements_list[i]
+        for i, x in enumerate(achievements_list):
             achievements.append(
                 Achievement(i, x[0], x[1], x[2], self._characters))
 

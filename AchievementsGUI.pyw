@@ -161,9 +161,8 @@ class AchievementsGUI(QMainWindow):
     def selectOwn(self):
         """选中所有已获得武将"""
         tw = self._charaSelectTable
-        for j in range(len(self._packs)):
+        for j, pack in enumerate(self._packs):
             i = 0
-            pack = self._packs[j]
             for c in self._characters.filter(lambda x: x.pack == pack):
                 if(c.cost == '已获得'):
                     tw.selectionModel().select(
@@ -174,9 +173,8 @@ class AchievementsGUI(QMainWindow):
     def selectShu(self):
         """选中所有蜀国武将"""
         tw = self._charaSelectTable
-        for j in range(len(self._packs)):
+        for j, pack in enumerate(self._packs):
             i = 0
-            pack = self._packs[j]
             for c in self._characters.filter(lambda x: x.pack == pack):
                 if(c.country == '蜀'):
                     tw.selectionModel().select(
@@ -187,9 +185,8 @@ class AchievementsGUI(QMainWindow):
     def selectWei(self):
         """选中所有魏国武将"""
         tw = self._charaSelectTable
-        for j in range(len(self._packs)):
+        for j, pack in enumerate(self._packs):
             i = 0
-            pack = self._packs[j]
             for c in self._characters.filter(lambda x: x.pack == pack):
                 if(c.country == '魏'):
                     tw.selectionModel().select(
@@ -200,9 +197,8 @@ class AchievementsGUI(QMainWindow):
     def selectWu(self):
         """选中所有吴国武将"""
         tw = self._charaSelectTable
-        for j in range(len(self._packs)):
+        for j, pack in enumerate(self._packs):
             i = 0
-            pack = self._packs[j]
             for c in self._characters.filter(lambda x: x.pack == pack):
                 if(c.country == '吴'):
                     tw.selectionModel().select(
@@ -213,9 +209,8 @@ class AchievementsGUI(QMainWindow):
     def selectQun(self):
         """选中所有群雄武将"""
         tw = self._charaSelectTable
-        for j in range(len(self._packs)):
+        for j, pack in enumerate(self._packs):
             i = 0
-            pack = self._packs[j]
             for c in self._characters.filter(lambda x: x.pack == pack):
                 if(c.country == '群'):
                     tw.selectionModel().select(

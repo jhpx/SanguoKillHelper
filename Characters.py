@@ -258,6 +258,11 @@ class Characters(object):
             '陈琳': '1铜钱', 'SK管辂': '240金币', '诸葛恪': '1铜钱',
             '刘协': '300金币', 'SK王异': '300金币', '步练师': '200金币'
         }
+
+        filedir = cost_filename[:cost_filename.rfind('/')]
+        if not os.path.exists(filedir):
+            os.makedirs(filedir)
+
         with open(cost_filename, 'wb') as file:
             for x in cost.keys():
                 csv_writer = csv.writer(file, lineterminator='\n')
@@ -313,6 +318,11 @@ class Characters(object):
         text += "\n神：三英神董卓、三英神吕布、三英神张角、三英神张让、三英神魏延"
         text += "\n未发售："
         text += "\n神：神周瑜、神曹操、神诸葛亮"
+
+        filedir = characters_filename[:characters_filename.rfind('/')]
+        if not os.path.exists(filedir):
+            os.makedirs(filedir)
+
         with open(characters_filename, 'wb') as file:
             file.write(text)
         return text
