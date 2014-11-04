@@ -3,7 +3,7 @@
 # Author: Jiangmf
 # Date: 2014-07-08
 import pygraphviz as pgv
-from Characters import Characters, Character, NonCharacter
+from Characters import Characters
 from Achievements import Achievements
 
 
@@ -24,7 +24,7 @@ class AchievementsPlot(object):
             for y in x.condition_node.name.split('/'):
                 key = y + "#" + x.reward_node.name
                 group[key] = group.get(key, '') + ',' + x.name
-        return [key + "#" + group[key][1:] for key in group.keys()]
+        return [k + "#" + group[k][1:] for k in group.keys()]
 
     def draw_png(self, png_filename=unicode('成就.png', 'utf8')):
         """生成一幅武将成就图"""

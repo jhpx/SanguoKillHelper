@@ -13,8 +13,7 @@ Or you cannot use the AchievementsPlot class.
 
 Just try:
 
-	python Characters.py
-	python Achievements.py
+	python AchievementsGUI.pyw
 Only you can import pygraphviz:
 
-	python AchievementsPlot.py
+	do '成就'->'生成成就关系图'

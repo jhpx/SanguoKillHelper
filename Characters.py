@@ -419,7 +419,6 @@ class Characters(object):
         elif sortby == 'cost':
             cmp = Character.cmp_cost
         if cmp:
-            dic = [self._char_dic[x] for x in self._sort_list]
             self._sort_list = [
                 x.name for x in sorted(self, cmp, reverse=reverse)]
         pass

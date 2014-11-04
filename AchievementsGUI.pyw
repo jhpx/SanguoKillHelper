@@ -5,9 +5,8 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
-from Characters import Characters, Character, NonCharacter
+from Characters import Characters, Character
 from Achievements import Achievements
-from AchievementsPlot import AchievementsPlot
 
 
 class AchievementsGUI(QMainWindow):
@@ -276,6 +275,7 @@ class AchievementsGUI(QMainWindow):
         """生成全部武将成就关系图"""
         text = "请查看成就.png"
         try:
+            from AchievementsPlot import AchievementsPlot
             AchievementsPlot(self._characters).draw_png()
         except Exception as err:
             text = str(err)
