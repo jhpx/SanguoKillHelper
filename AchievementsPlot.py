@@ -26,7 +26,7 @@ class AchievementsPlot(object):
                 group[key] = group.get(key, '') + ',' + x.name
         return [k + "#" + group[k][1:] for k in group.keys()]
 
-    def draw_png(self, png_filename=unicode('成就.png', 'utf8')):
+    def draw_png(self, png_filename=unicode('成就图.png', 'utf8')):
         """生成一幅武将成就图"""
         # 设定一个有向图
         G = pgv.AGraph(rankdir='LR')
