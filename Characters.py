@@ -9,6 +9,7 @@ import csv
 import copy
 import time
 
+
 class Node(object):
     __metaclass__ = abc.ABCMeta
 
@@ -191,14 +192,16 @@ class Characters(object):
                  gallery_filename=unicode("武将列表.txt", 'utf8'),
                  cost_filename=unicode("data/Cost", 'utf8')
                  ):
-        self._char_dic = self.__read_characters(characters_filename, cost_filename)
+        self._char_dic = self.__read_characters(
+            characters_filename, cost_filename)
         self._sort_list = self._char_dic.keys()
         self.sort('default')
         if os.path.exists(gallery_filename):
             # 更新已购买的武将
             self._char_dic.update(self.__read_gallery(gallery_filename))
         else:
-            self.write_characters(gallery_filename)
+            self.filter(lambda x: x.cost == '已获得').write_characters(
+                gallery_filename)
 
     def __read_characters(self, characters_filename, cost_filename):
         """从'各包武将'与'武将价格'读取信息，并初始化"""
